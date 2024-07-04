@@ -4,18 +4,43 @@ pipeline {
     stages {
         stage('Deploy To Kubernetes') {
             steps {
-               withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'EKS-2', contextName: '', credentialsId: 'secret-token', namespace: 'webapps', serverUrl: 'https://9E79FEF4BAE4E842DD8BCA86C32E60E8.gr7.ap-south-1.eks.amazonaws.com']])
-                 {
-                    sh "kubectl apply -f deployment.yml"
+                script {
+                    def serverUrl = 'https://9E79FEF4BAE4E842DD8BCA86C32E60E8.gr7.ap-south-1.eks.amazonaws.com'
+                    def namespace = 'webapps'
+                    def credentialsId = 'secret-token'
+                    
+                    def token = credentials(credentialsId)
+                    
+                    withKubeConfig(
+                        credentialsId: credentialsId,
+                        serverUrl: serverUrl,
+                        namespace: namespace,
+                        kubeconfigId: ''
+                    ) {
+                        sh "kubectl apply -f deployment.yaml"
+                    }
                 }
             }
         }
         
         stage('Verify Deployment') {
             steps {
-               withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'EKS-2', contextName: '', credentialsId: 'secret-token', namespace: 'webapps', serverUrl: 'https://9E79FEF4BAE4E842DD8BCA86C32E60E8.gr7.ap-south-1.eks.amazonaws.com']])
-                 {
-                    sh "kubectl get svc -n webapps"
+                script {
+                    def serverUrl = 'https://9E79FEF4BAE4E842DD8BCA86C32E60E8.gr7.ap-south-1.eks.amazonaws.com'
+                    def namespace = 'webapps'
+                    def credentialsId = 'secret-token'
+                    
+
+                    def token = credentials(credentialsId)
+                    
+                    withKubeConfig(
+                        credentialsId: credentialsId,
+                        serverUrl: serverUrl,
+                        namespace: namespace,
+                        kubeconfigId: ''
+                    ) {
+                        sh "kubectl get svc -n webapps"
+                    }
                 }
             }
         }
