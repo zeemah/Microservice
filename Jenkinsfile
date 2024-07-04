@@ -3,11 +3,19 @@ pipeline {
 
     stages {
         stage('Deploy To Kubernetes') {
-            sh "kubectl apply -f deployment-service.yml"    
+            steps {
+                
+                sh "kubectl apply -f deployment-service.yml"
+                      
+            }
         }
         
         stage('verify Deployment') {
-            sh "kubectl get svc -n webapps"
+            steps {
+               {
+                    sh "kubectl get svc -n webapps"
+                }
+            }
         }
     }
 }
